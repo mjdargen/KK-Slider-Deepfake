@@ -23,4 +23,7 @@ To run this code in your environment, you will need to:
        * pip install pydub  
        * pip install moviepy[optional]==1.0.3 (previous versions of moviepy cause errors in my environment  
 
-Video demo: https://youtu.be/aJIZB_f8QiM
+Video demo: https://youtu.be/aJIZB_f8QiM  
+
+
+This program has a lot of dependencies and is very RAM intensive. I've made this Google Colab Notebook where you can easily run the code using Google's computing resources: https://colab.research.google.com/drive/14d4U6Yhi2APOhDjANS0SeBlKuCNeBTe-?usp=sharing
