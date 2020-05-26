@@ -1,8 +1,7 @@
-# KK-Deepfake
+# KK Slider Deepfake
 Have KK Slider from Animal Crossing record a custom message for your or your friend's special occasion!
 
 
-# KK Slider Deepfake
 *Michael D'Argenio  
 mjdargenio@gmail.com  
 https://dargenio.dev  
