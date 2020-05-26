@@ -28,10 +28,12 @@ import contextlib
 import textwrap
 from audio import speak
 import subprocess
+import gc
+import time
+
+gc.enable()
 
 text = input('What would you like KK Slider to say?\n')
-
-# text = "Hello daddio. How's it going? Name's Slider. KK Slider. I hear it's your birthday. Happy birthday! You sound like a pretty cool cat. I'm gonna play some tunes later for the industry fat cats if you wanna stick around and groove. Always remember, don't be a square and keep it groovy. See you around daddio!"
 
 # ############################################ #
 # text processing
@@ -142,6 +144,7 @@ for frame in frames:
         rate = f.getframerate()
         duration = frames / float(rate)
         print(duration)
+        del f
 
     # find lengths for current frame
     lengths = [0, 0, 0, 0]
@@ -221,6 +224,8 @@ for frame in frames:
         print(f"Line {i} is done!")
 
     # add audio
+    gc.collect()
+    time.sleep(5)
     audio = mp.AudioFileClip("sound.wav")
     print(f"audio length {audio.duration}")
     print(f"video length {concat_clip.duration}")
@@ -243,6 +248,8 @@ for frame in frames:
     # write out to file to save RAM
     clips = [concat_clip, pause_vid]
     final_vid = mp.concatenate_videoclips(clips)
+    gc.collect()
+    time.sleep(5)
     final_vid.write_videofile(f"temp{frame_num}.mp4", audio_codec='aac')
     # close and del all objects
     del audio
@@ -260,19 +267,36 @@ for frame in frames:
     del final_vid
     pause_vid.close()
     del pause_vid
+    gc.collect()
+    time.sleep(5)
 
     # reset variables
     first = True
     frame_num += 1
 
 # use ffmpeg to concatenate videos
-# commands work for Windows, updated commands for Linux/Mac
-subprocess.call("del list.txt", shell=True)
-subprocess.call("del output.mp4", shell=True)
-subprocess.call("(echo file 'beginning.mp4')>>list.txt", shell=True)
+# Windows implementation
+# subprocess.call("del list.txt", shell=True)
+# subprocess.call("del output.mp4", shell=True)
+# subprocess.call("(echo file 'beginning.mp4')>>list.txt", shell=True)
+# for i in range(0, frame_num):
+#     subprocess.call(f"(echo file 'temp{i}.mp4')>>list.txt", shell=True)
+# subprocess.call("(echo file 'ending.mp4')>>list.txt", shell=True)
+# subprocess.call("ffmpeg -safe 0 -f concat -i list.txt -c copy output.mp4", shell=True)
+# for i in range(0, frame_num):
+#     subprocess.call(f"del temp{i}.mp4", shell=True)
+# subprocess.call("del list.txt", shell=True)
+# subprocess.call("del sound.wav", shell=True)
+
+# Mac/Linux implementation
+subprocess.call("rm -f list.txt", shell=True)
+subprocess.call("rm -f output.mp4", shell=True)
+subprocess.call("echo 'file 'beginning.mp4'' | cat >> list.txt", shell=True)
 for i in range(0, frame_num):
-    subprocess.call(f"(echo file 'temp{i}.mp4')>>list.txt", shell=True)
-subprocess.call("(echo file 'ending.mp4')>>list.txt", shell=True)
+    subprocess.call(f"echo 'file 'temp{i}.mp4'' | cat >> list.txt", shell=True)
+subprocess.call("echo 'file 'ending.mp4'' | cat >> list.txt", shell=True)
 subprocess.call("ffmpeg -safe 0 -f concat -i list.txt -c copy output.mp4", shell=True)
 for i in range(0, frame_num):
-    subprocess.call(f"del temp{i}.mp4", shell=True)
+    subprocess.call(f"rm -f temp{i}.mp4", shell=True)
+subprocess.call("rm -f list.txt", shell=True)
+subprocess.call("rm -f sound.wav", shell=True)
