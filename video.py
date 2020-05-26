@@ -51,20 +51,16 @@ i = 0
 
 # for sentence in sentences:
 while i < num_sentences:
-    # sentence = sentences[i]
     remaining = ''
+    # get remaining sentences
     for j in range(i, len(sentences)):
         remaining += sentences[j] + ' '
-    # print(sentences[i:])
     lines = textwrap.TextWrapper(width=40).wrap(text=remaining)
-    # print(lines)
     # if more than 3 lines remaining
     if len(lines) > 3:
         for j in range(0, 3):
             new_frame[0] += lines[j] + ' '
-        # print(new_frame[0])
         frm_sntcs = tokenize.sent_tokenize(new_frame[0])
-        # print(len(frm_sntcs))
         # if 1st sentence larger than frame
         if len(frm_sntcs) == 1:
             # add ...
@@ -98,7 +94,6 @@ while i < num_sentences:
             new_frame[0] = ''
             for j in range(0, len(frm_sntcs) - 2):
                 new_frame[0] += frm_sntcs[j] + ' '
-                # print("hello")
             i += len(frm_sntcs) - 2
     # if less than 3 lines remaining, just print them
     else:
@@ -143,16 +138,12 @@ for frame in frames:
         frames = f.getnframes()
         rate = f.getframerate()
         duration = frames / float(rate)
-        print(duration)
         del f
 
     # find lengths for current frame
     lengths = [0, 0, 0, 0]
     for i in range(0, 4):
         lengths[i] = len(frame[i]) + 1
-
-    # for line in lines:
-    #     print(line)
 
     # calculate seconds per character
     SPC = duration / (lengths[1]+lengths[2]+lengths[3])
@@ -183,7 +174,7 @@ for frame in frames:
             dur2 = lengths[3] if i == 3 else 0
             dur = dur1 + dur2
             # open talking clip and write current line of text
-            talk_raw = mp.VideoFileClip("talk.mp4").subclip((chars+dur)*SPC, (chars+1+dur)*SPC)
+            talk_raw = mp.VideoFileClip("./videos/talk.mp4").subclip((chars+dur)*SPC, (chars+1+dur)*SPC)
             txt_linex = (mp.TextClip(frame[i][0:chars], fontsize=62,
                                      font='./FinkHeavy.ttf', color='white')
                          .set_position((X_PIX, Y_PIX + ((i-1) * LINE_SPACE)))
@@ -232,7 +223,7 @@ for frame in frames:
     concat_clip = concat_clip.set_audio(audio)
 
     # concatenate pause
-    pause_raw = mp.VideoFileClip("pause.mp4").subclip(1, 2)
+    pause_raw = mp.VideoFileClip("./videos/pause.mp4").subclip(1, 2)
     # add the entire text and hold for duration of pause
     txt_line1 = txt_line1.set_duration(1)
     txt_line2 = txt_line2.set_duration(1)
@@ -278,10 +269,10 @@ for frame in frames:
 # Windows implementation
 # subprocess.call("del list.txt", shell=True)
 # subprocess.call("del output.mp4", shell=True)
-# subprocess.call("(echo file 'beginning.mp4')>>list.txt", shell=True)
+# subprocess.call("(echo file './videos/beginning.mp4')>>list.txt", shell=True)
 # for i in range(0, frame_num):
 #     subprocess.call(f"(echo file 'temp{i}.mp4')>>list.txt", shell=True)
-# subprocess.call("(echo file 'ending.mp4')>>list.txt", shell=True)
+# subprocess.call("(echo file './videos/ending.mp4')>>list.txt", shell=True)
 # subprocess.call("ffmpeg -safe 0 -f concat -i list.txt -c copy output.mp4", shell=True)
 # for i in range(0, frame_num):
 #     subprocess.call(f"del temp{i}.mp4", shell=True)
