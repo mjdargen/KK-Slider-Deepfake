@@ -282,10 +282,10 @@ for frame in frames:
 # Mac/Linux implementation
 subprocess.call("rm -f list.txt", shell=True)
 subprocess.call("rm -f output.mp4", shell=True)
-subprocess.call("echo 'file 'beginning.mp4'' | cat >> list.txt", shell=True)
+subprocess.call("echo 'file './videos/beginning.mp4'' | cat >> list.txt", shell=True)
 for i in range(0, frame_num):
     subprocess.call(f"echo 'file 'temp{i}.mp4'' | cat >> list.txt", shell=True)
-subprocess.call("echo 'file 'ending.mp4'' | cat >> list.txt", shell=True)
+subprocess.call("echo 'file './videos/ending.mp4'' | cat >> list.txt", shell=True)
 subprocess.call("ffmpeg -safe 0 -f concat -i list.txt -c copy output.mp4", shell=True)
 for i in range(0, frame_num):
     subprocess.call(f"rm -f temp{i}.mp4", shell=True)
