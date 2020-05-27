@@ -67,7 +67,7 @@ while i < num_sentences:
             if len(lines[2]) < 37:
                 partial = '... ' + str(sentences[i][sentences[i].find(lines[2])+len(lines[2]):])
                 sentences[i] = partial
-                lines[2] = lines[2][:-1] + '...'
+                lines[2] = lines[2] + '...'
             # can't fit ... so subtract word
             else:
                 words = lines[2].split()
