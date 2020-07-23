@@ -150,15 +150,15 @@ for frame in frames:
     first = True
 
     # initialize txt_lines
-    txt_linex = (mp.TextClip("A", fontsize=62,
+    txt_linex = (mp.TextClip(" ", fontsize=62,
                              font='./FinkHeavy.ttf', color='white')
                  .set_position(("center"))
                  .set_duration(SPC))
-    txt_line1 = (mp.TextClip("A", fontsize=62,
+    txt_line1 = (mp.TextClip(" ", fontsize=62,
                              font='./FinkHeavy.ttf', color='white')
                  .set_position(("center"))
                  .set_duration(SPC))
-    txt_line2 = (mp.TextClip("A", fontsize=62,
+    txt_line2 = (mp.TextClip(" ", fontsize=62,
                              font='./FinkHeavy.ttf', color='white')
                  .set_position(("center"))
                  .set_duration(SPC))

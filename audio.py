@@ -12,12 +12,13 @@ def speak(stringy):
     stringy = stringy.lower()
     sounds = {}
 
-    keys = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','th','sh',' ','.']
+    keys = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o',
+            'p','q','r','s','t','u','v','w','x','y','z','th','sh',' ','.']
     for index, ltr in enumerate(keys):
-        num = index+1
+        num = index + 1
         if num < 10:
-            num = '0'+str(num)
-        sounds[ltr] = './sounds'+'/sound'+str(num)+'.wav'
+            num = '0' + str(num)
+        sounds[ltr] = f"./sounds/sound{num}.wav"
 
     rnd_factor = .35
 
