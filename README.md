@@ -24,7 +24,7 @@ To run this code in your environment, you will need to:
    * Install python dependencies  
        * pip install nltk  
        * pip install pydub  
-       * pip install moviepy[optional]==1.0.3 (previous versions of moviepy cause errors in my environment  
+       * pip install moviepy[optional]==1.0.3 (previous versions of moviepy cause errors in my environment)  
 
 Video demo: https://youtu.be/aJIZB_f8QiM  
 
