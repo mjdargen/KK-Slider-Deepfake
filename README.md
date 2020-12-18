@@ -6,7 +6,8 @@ Have KK Slider from Animal Crossing record a custom message for your or your fri
 mjdargenio@gmail.com  
 https://dargenio.dev  
 https://github.com/mjdargen  
-Created: May 26, 2020*   
+Created: May 26, 2020  
+Revised: December 18, 2020*   
 
 Check out this demo video here:  
 [![KK Slider Deepfake Demo](https://img.youtube.com/vi/aJIZB_f8QiM/0.jpg)](https://www.youtube.com/watch?v=aJIZB_f8QiM)
