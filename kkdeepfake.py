@@ -5,7 +5,7 @@
 # https://dargen.io
 # https://github.com/mjdargen
 # Created: May 26, 2020
-# Revised: December 18, 2020
+# Revised: January 2, 2021
 #
 # This program uses moviepy and pydub to generate video and audio of KK
 # Slider. This program works like cameo.com where you can ask a celebrity
@@ -24,6 +24,7 @@
 
 import moviepy.editor as mp
 from nltk import tokenize
+from pydub import AudioSegment
 import wave
 import contextlib
 import textwrap
@@ -31,7 +32,7 @@ import subprocess
 import gc
 import time
 import random
-from pydub import AudioSegment
+
 
 # main processing
 def main():
@@ -58,77 +59,47 @@ def main():
 def text_processing(script):
     # tokenize into sentences
     sentences = tokenize.sent_tokenize(script)
-    # print(sentences)
 
-    # total text, line1, line2, line3
-    new_frame = ['', '', '', '']
     frames = []
     num_sentences = len(sentences)
     i = 0
 
-    # for sentence in sentences:
+    # check number of remaining sentences
     while i < num_sentences:
-        remaining = ''
-        # get remaining sentences
-        for j in range(i, len(sentences)):
-            remaining += sentences[j] + ' '
-        lines = textwrap.TextWrapper(width=40).wrap(text=remaining)
-        # if more than 3 lines remaining
-        if len(lines) > 3:
-            for j in range(0, 3):
-                new_frame[0] += lines[j] + ' '
-            frm_sntcs = tokenize.sent_tokenize(new_frame[0])
-            # if 1st sentence larger than frame
-            if len(frm_sntcs) == 1:
-                # add ...
-                if len(lines[2]) < 37:
-                    partial = '... ' + str(sentences[i][sentences[i].find(lines[2])+len(lines[2]):])
-                    sentences[i] = partial
-                    lines[2] = lines[2] + '...'
-                # can't fit ... so subtract word
-                else:
-                    words = lines[2].split()
-                    remove = 0
-                    j = 1
-                    while remove < 3:
-                        remove += len(words[len(words)-j])
-                        j += 1
-                    partial = '... ' + str(sentences[i][sentences[i].find(lines[2])+len(lines[2])-remove-1:])
-                    sentences[i] = partial
-                    lines[2] = lines[2][:-(remove+1)] + '...'
-                # add lines in
-                new_frame[0] = ''
-                for j in range(0, 3):
-                    new_frame[0] += lines[j] + ' '
-            # more than one sentence
-            elif len(frm_sntcs) == 2:
-                new_frame[0] = ''
-                for j in range(0, len(frm_sntcs) - 1):
-                    new_frame[0] += frm_sntcs[j] + ' '
-                i += len(frm_sntcs) - 1
-            # more than two sentences
-            else:
-                new_frame[0] = ''
-                for j in range(0, len(frm_sntcs) - 2):
-                    new_frame[0] += frm_sntcs[j] + ' '
-                i += len(frm_sntcs) - 2
-        # if less than 3 lines remaining, just print them
-        else:
-            for j in range(0, len(lines)):
-                new_frame[0] += lines[j] + ' '
-            i = num_sentences  # to exit
-        frames.append(new_frame)
-        new_frame = ['', '', '', '']
 
-    # all frames are done
+        # total text, line1, line2, line3
+        frame = ['', '', '', '']
+        for num_s_frame, sentence in enumerate(sentences[i:]):
+            frame[0] += sentence + ' '
+            lines = textwrap.TextWrapper(width=40).wrap(text=frame[0])
+            # more than 3 lines left
+            if len(lines) > 3:
+                # 1st sentence too large to fit, so split it
+                if num_s_frame == 0:
+                    lines = textwrap.TextWrapper(width=40, max_lines=3, placeholder='...').wrap(text=frame[0])
+                    frame[0] = ' '.join(lines)
+                    # retrieve rest of sentence for next frame
+                    new = i + num_s_frame  # new partial sentence index
+                    index = sentence.find(frame[0][:-3])+len(frame[0][:-3])
+                    sentences[new] = '...' + sentence[index:]
+                # one or more sentences can fit
+                else:
+                    frame[0] = ' '.join(sentences[i: i+num_s_frame])
+                break
+            # less than 3 lines left, on last sentence and it fits
+            elif num_s_frame == len(sentences[i:])-1:
+                frame[0] = ' '.join(sentences[i:])
+                i += 1
+        # increment num of sentences processes and append new frame
+        i += num_s_frame
+        frames.append(frame)
+
+    # all frames are done, divide into separate lines
     for frame in frames:
         lines = textwrap.TextWrapper(width=40).wrap(text=frame[0])
-        j = 0
-        while j < len(lines):
+        for j in range(len(lines)):
             frame[j+1] = lines[j]
-            j += 1
         print(frame)
-
     return frames
 
 
@@ -228,13 +199,13 @@ def video_processing(frames):
                 else:
                     clips = [concat_clip, talk_vid]
                     concat_clip = mp.concatenate_videoclips(clips)
-                # talk_vid.close()  # makes it fail
                 chars += 1
             print(f"Line {i} is done!")
 
-        # add audio
+        # call garbage collector and wait
         gc.collect()
         time.sleep(5)
+        # add audio
         audio = mp.AudioFileClip("sound.wav")
         print(f"audio length {audio.duration}")
         print(f"video length {concat_clip.duration}")
@@ -265,16 +236,8 @@ def video_processing(frames):
         concat_clip.close()
         final_vid.close()
         pause_vid.close()
-        del audio
-        del txt_line1
-        del txt_line2
-        del txt_linex
-        del clips
-        del talk_vid
-        del pause_raw
-        del concat_clip
-        del final_vid
-        del pause_vid
+        del audio, txt_line1, txt_line2, txt_linex
+        del clips, talk_vid, pause_raw, concat_clip, final_vid, pause_vid
         # call garbage collector and wait
         gc.collect()
         time.sleep(5)
@@ -336,7 +299,6 @@ def speak(stringy):
 
     combined_sounds = None
 
-    # print(len(infiles))
     for index, sound in enumerate(infiles):
         tempsound = AudioSegment.from_wav(sound)
         if stringy[len(stringy)-1] == '?':
@@ -360,7 +322,6 @@ def speak(stringy):
 ###############################################
 #         ffmpeg video concatentation         #
 ###############################################
-# use ffmpeg to concatenate videos
 # Windows implementation
 def video_concatenation_windows(frame_num):
     subprocess.call("del list.txt", shell=True)
@@ -376,7 +337,6 @@ def video_concatenation_windows(frame_num):
     subprocess.call("del sound.wav", shell=True)
 
 
-# use ffmpeg to concatenate videos
 # Mac/Linux implementation
 def video_concatenation(frame_num):
     subprocess.call("rm -f list.txt", shell=True)
