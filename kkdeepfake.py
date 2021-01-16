@@ -5,13 +5,17 @@
 # https://dargen.io
 # https://github.com/mjdargen
 # Created: May 26, 2020
-# Revised: January 2, 2021
+# Revised: January 15, 2021
 #
 # This program uses moviepy and pydub to generate video and audio of KK
 # Slider. This program works like cameo.com where you can ask a celebrity
 # to record a custom message for your or your friend's special occasion.
 # This program allows you to request KK Slider to record a custom message
 # for any occasion.
+#
+# This program uses equalo-official's animalese generator. It has been slightly
+# modified for use in this project. View their project here:
+# https://github.com/equalo-official/animalese-generator
 #
 # To run this code in your environment, you will need to:
 #   * Install Python 3, ImageMagick, ffmpeg
@@ -30,26 +34,21 @@ import contextlib
 import textwrap
 import subprocess
 import gc
+import os
 import time
 import random
 
 
 # main processing
 def main():
-    # enable garbage collection
-    gc.enable()
-    # prompt for script
-    script = input('What would you like KK Slider to say?\n')
-    # process text
+    gc.enable()  # enable garbage collection
+    script = input('What would you like KK Slider to say?\n')  # input prompt
     print("\n\nCreating cue cards...")
-    frames = text_processing(script)
-    # process video and audio
+    frames = text_processing(script)  # process text
     print("\n\nRecording scenes...")
-    frame_num = video_processing(frames)
-    # use ffmpeg to combine video files
+    frame_num = video_processing(frames)  # process video and audio
     print("\n\nSplicing together scenes...")
-    video_concatenation(frame_num)  # mac/linux
-    # video_concatenation_windows(frame_num)  # windows
+    video_concatenation(frame_num)  # use ffmpeg to concat videos
     print("\n\nDone!")
 
 
@@ -121,7 +120,7 @@ def video_processing(frames):
     # for every frame of text
     for frame in frames:
         # generate audio
-        speak(frame[0])
+        audio_processing(frame[0])
         # get length of audio
         fname = './sound.wav'
         with contextlib.closing(wave.open(fname, 'r')) as f:
@@ -255,13 +254,14 @@ def video_processing(frames):
 # source code for animalese generator from equalo-official
 # modified for project. original source provided below:
 # https://github.com/equalo-official/animalese-generator
-def speak(stringy):
+def audio_processing(stringy):
 
     stringy = stringy.lower()
     sounds = {}
 
-    keys = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o',
-            'p','q','r','s','t','u','v','w','x','y','z','th','sh',' ','.']
+    keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+            'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+            'th', 'sh', ' ', '.']
     for index, ltr in enumerate(keys):
         num = index + 1
         if num < 10:
@@ -322,34 +322,29 @@ def speak(stringy):
 ###############################################
 #         ffmpeg video concatentation         #
 ###############################################
-# Windows implementation
-def video_concatenation_windows(frame_num):
-    subprocess.call("del list.txt", shell=True)
-    subprocess.call("del output.mp4", shell=True)
-    subprocess.call("(echo file './videos/beginning.mp4')>>list.txt", shell=True)
-    for i in range(0, frame_num):
-        subprocess.call(f"(echo file 'temp{i}.mp4')>>list.txt", shell=True)
-    subprocess.call("(echo file './videos/ending.mp4')>>list.txt", shell=True)
-    subprocess.call("ffmpeg -safe 0 -f concat -i list.txt -c copy output.mp4", shell=True)
-    for i in range(0, frame_num):
-        subprocess.call(f"del temp{i}.mp4", shell=True)
-    subprocess.call("del list.txt", shell=True)
-    subprocess.call("del sound.wav", shell=True)
-
-
-# Mac/Linux implementation
 def video_concatenation(frame_num):
-    subprocess.call("rm -f list.txt", shell=True)
-    subprocess.call("rm -f output.mp4", shell=True)
-    subprocess.call("echo 'file './videos/beginning.mp4'' | cat >> list.txt", shell=True)
-    for i in range(0, frame_num):
-        subprocess.call(f"echo 'file 'temp{i}.mp4'' | cat >> list.txt", shell=True)
-    subprocess.call("echo 'file './videos/ending.mp4'' | cat >> list.txt", shell=True)
-    subprocess.call("ffmpeg -safe 0 -f concat -i list.txt -c copy output.mp4", shell=True)
-    for i in range(0, frame_num):
-        subprocess.call(f"rm -f temp{i}.mp4", shell=True)
-    subprocess.call("rm -f list.txt", shell=True)
-    subprocess.call("rm -f sound.wav", shell=True)
+    # windows implementation
+    if os.name == 'nt':
+        subprocess.call("del list.txt output.mp4", shell=True)
+        subprocess.call("(echo file './videos/beginning.mp4')>>list.txt", shell=True)
+        for i in range(0, frame_num):
+            subprocess.call(f"(echo file 'temp{i}.mp4')>>list.txt", shell=True)
+        subprocess.call("(echo file './videos/ending.mp4')>>list.txt", shell=True)
+        subprocess.call("ffmpeg -safe 0 -f concat -i list.txt -c copy output.mp4", shell=True)
+        for i in range(0, frame_num):
+            subprocess.call(f"del temp{i}.mp4", shell=True)
+        subprocess.call("del list.txt sound.wav", shell=True)
+    # mac/Linux implementation
+    else:
+        subprocess.call("rm -f list.txt output.mp4", shell=True)
+        subprocess.call("echo 'file './videos/beginning.mp4'' | cat >> list.txt", shell=True)
+        for i in range(0, frame_num):
+            subprocess.call(f"echo 'file 'temp{i}.mp4'' | cat >> list.txt", shell=True)
+        subprocess.call("echo 'file './videos/ending.mp4'' | cat >> list.txt", shell=True)
+        subprocess.call("ffmpeg -safe 0 -f concat -i list.txt -c copy output.mp4", shell=True)
+        for i in range(0, frame_num):
+            subprocess.call(f"rm -f temp{i}.mp4", shell=True)
+        subprocess.call("rm -f list.txt sound.wav", shell=True)
 
 
 if __name__ == "__main__":

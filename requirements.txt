@@ -1,0 +1,3 @@
+nltk
+pydub
+moviepy[optional]>=1.0.3
