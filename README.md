@@ -30,4 +30,6 @@ To run this code in your environment, you will need to:
 Video demo: https://youtu.be/aJIZB_f8QiM  
 
 
-This program has a lot of dependencies and is very RAM-intensive. I've made this Google Colab Notebook where you can easily run the code using Google's computing resources: https://colab.research.google.com/drive/14d4U6Yhi2APOhDjANS0SeBlKuCNeBTe-?usp=sharing
+This program has a lot of dependencies and is very RAM-intensive. I've made this Google Colab Notebook where you can easily run the code using Google's computing resources: https://colab.research.google.com/drive/14d4U6Yhi2APOhDjANS0SeBlKuCNeBTe-?usp=sharing  
+
+For a complete walkthrough of how this program works, you can go here: [Instructables Tutorial](https://www.instructables.com/KK-Slider-Deepfake/) or [Hackster Tutorial](https://www.hackster.io/mjdargen/kk-slider-deepfake-931b3d).
