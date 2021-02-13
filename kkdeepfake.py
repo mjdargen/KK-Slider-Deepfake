@@ -20,7 +20,7 @@
 # To run this code in your environment, you will need to:
 #   * Install Python 3, ImageMagick, ffmpeg
 #       * May have to configure moviepy with ImageMagick for your environment
-#   * Install python dependencies
+#   * Install python dependencies - pip3 install -r requirements.txt
 #       * pip install nltk
 #       * pip install pydub
 #       * pip install moviepy[optional]==1.0.3
