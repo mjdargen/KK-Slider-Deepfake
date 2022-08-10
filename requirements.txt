@@ -1,3 +1,4 @@
 nltk
 pydub
-moviepy[optional]>=1.0.3
+scipy
+moviepy>=1.0.3
